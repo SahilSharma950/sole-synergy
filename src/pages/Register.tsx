@@ -6,7 +6,7 @@ import { register } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { User } from '@/lib/types';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Header from '@/components/Header';

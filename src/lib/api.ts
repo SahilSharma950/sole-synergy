@@ -1,6 +1,5 @@
-
 import { Product, Category, User, CartItem, WishlistItem } from './types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 // Mock data for products
 const products: Product[] = [
