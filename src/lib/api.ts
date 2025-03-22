@@ -1,5 +1,4 @@
-
-import { Product, Category, User, CartItem } from './types';
+import { Product, Category, User, CartItem, WishlistItem } from './types';
 import { toast } from '@/components/ui/sonner';
 
 // Mock data for products
@@ -96,7 +95,7 @@ const products: Product[] = [
     id: '6',
     name: 'Old Skool',
     price: 69.99,
-    description: 'The Vans Old Skool is a classic skate shoe and the brand's first model to feature the iconic side stripe. With a durable suede and canvas upper, it delivers both style and functionality for skaters and fashion enthusiasts alike.',
+    description: 'The Vans Old Skool is a classic skate shoe and the brand\'s first model to feature the iconic side stripe. With a durable suede and canvas upper, it delivers both style and functionality for skaters and fashion enthusiasts alike.',
     images: [
       'https://images.vans.com/is/image/VansBrand/HO19_OLD%20SKOOL_ECOM_BLACK_SIDE?$SCALE-LARGE$',
       'https://images.vans.com/is/image/VansBrand/HO19_OLD%20SKOOL_ECOM_BLACK_TOP?$SCALE-LARGE$',
@@ -168,6 +167,50 @@ export const getProductsByCategory = async (categoryId: string): Promise<Product
   // Simulating API call delay
   await new Promise(resolve => setTimeout(resolve, 500));
   return products.filter(product => product.category === categoryId);
+};
+
+// Mock wishlist state
+let wishlist: WishlistItem[] = [];
+
+export const getWishlist = async (): Promise<WishlistItem[]> => {
+  // Simulating API call delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  return wishlist;
+};
+
+export const addToWishlist = async (productId: string): Promise<WishlistItem[]> => {
+  // Simulating API call delay
+  await new Promise(resolve => setTimeout(resolve, 400));
+  
+  const product = products.find(p => p.id === productId);
+  if (!product) {
+    throw new Error('Product not found');
+  }
+  
+  // Check if product already in wishlist
+  const existingItemIndex = wishlist.findIndex(item => item.product.id === productId);
+  
+  if (existingItemIndex < 0) {
+    // Add new item to wishlist
+    wishlist.push({
+      product,
+      dateAdded: new Date()
+    });
+    
+    toast('Product added to wishlist');
+  }
+  
+  return wishlist;
+};
+
+export const removeFromWishlist = async (productId: string): Promise<WishlistItem[]> => {
+  // Simulating API call delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  wishlist = wishlist.filter(item => item.product.id !== productId);
+  
+  toast('Product removed from wishlist');
+  return wishlist;
 };
 
 // Mock cart state (normally would use a more sophisticated state management)

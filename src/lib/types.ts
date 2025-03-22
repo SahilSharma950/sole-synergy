@@ -30,6 +30,11 @@ export interface CartItem {
   color: string;
 }
 
+export interface WishlistItem {
+  product: Product;
+  dateAdded: Date;
+}
+
 export interface Category {
   id: string;
   name: string;

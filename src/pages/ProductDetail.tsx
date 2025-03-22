@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getProduct, addToCart } from '@/lib/api';
-import { Product } from '@/lib/types';
+import { getProduct, addToCart, addToWishlist, removeFromWishlist, getWishlist } from '@/lib/api';
+import { Product, WishlistItem } from '@/lib/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const queryClient = useQueryClient();
   
   const { data: product, isLoading, error } = useQuery<Product | undefined>({
@@ -24,6 +24,18 @@ const ProductDetail = () => {
     enabled: !!id
   });
   
+  const { data: wishlistItems } = useQuery<WishlistItem[]>({
+    queryKey: ['wishlist'],
+    queryFn: getWishlist,
+    initialData: []
+  });
+  
+  useEffect(() => {
+    if (wishlistItems && product) {
+      setIsInWishlist(wishlistItems.some(item => item.product.id === product.id));
+    }
+  }, [wishlistItems, product]);
+  
   const { mutate: addToCartMutation, isPending } = useMutation({
     mutationFn: () => addToCart(product!.id, selectedSize, selectedColor, quantity),
     onSuccess: () => {
@@ -31,6 +43,20 @@ const ProductDetail = () => {
     }
   });
   
+  const { mutate: addToWishlistMutation } = useMutation({
+    mutationFn: () => addToWishlist(product!.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    }
+  });
+  
+  const { mutate: removeFromWishlistMutation } = useMutation({
+    mutationFn: () => removeFromWishlist(product!.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    }
+  });
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -115,6 +141,14 @@ const ProductDetail = () => {
     }
   };
   
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      removeFromWishlistMutation();
+    } else {
+      addToWishlistMutation();
+    }
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -127,11 +161,11 @@ const ProductDetail = () => {
             <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
             <Link to="/products" className="text-gray-500 hover:text-blue-500">Products</Link>
             <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
-            <Link to={`/categories/${product.category}`} className="text-gray-500 hover:text-blue-500">
-              {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
+            <Link to={`/categories/${product?.category}`} className="text-gray-500 hover:text-blue-500">
+              {product?.category.charAt(0).toUpperCase() + product?.category.slice(1)}
             </Link>
             <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
-            <span className="text-gray-900 font-medium">{product.name}</span>
+            <span className="text-gray-900 font-medium">{product?.name}</span>
           </nav>
           
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
@@ -139,14 +173,14 @@ const ProductDetail = () => {
             <div className="md:w-1/2">
               <div className="mb-4 overflow-hidden rounded-lg bg-gray-50">
                 <img 
-                  src={product.images[selectedImage]} 
-                  alt={product.name}
+                  src={product?.images[selectedImage]} 
+                  alt={product?.name}
                   className="w-full h-auto object-contain aspect-square"
                 />
               </div>
               
               <div className="flex gap-4 overflow-x-auto pb-2">
-                {product.images.map((image, index) => (
+                {product?.images.map((image, index) => (
                   <button
                     key={index}
                     className={cn(
@@ -168,7 +202,7 @@ const ProductDetail = () => {
             {/* Product Details */}
             <div className="md:w-1/2">
               <div className="mb-6">
-                <h1 className="text-3xl font-display font-bold mb-2">{product.name}</h1>
+                <h1 className="text-3xl font-display font-bold mb-2">{product?.name}</h1>
                 
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex">
@@ -177,39 +211,39 @@ const ProductDetail = () => {
                         key={i}
                         className={cn(
                           "h-4 w-4",
-                          i < Math.round(product.rating) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
+                          i < Math.round(product?.rating || 0) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"
                         )}
                       />
                     ))}
                   </div>
                   <span className="text-sm text-gray-600">
-                    {product.rating.toFixed(1)} ({product.reviews} reviews)
+                    {product?.rating.toFixed(1)} ({product?.reviews} reviews)
                   </span>
                 </div>
                 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-3">
-                    {product.originalPrice && (
+                    {product?.originalPrice && (
                       <span className="text-gray-400 line-through text-lg">
                         ${product.originalPrice.toFixed(2)}
                       </span>
                     )}
                     <span className={cn(
                       "text-2xl font-semibold",
-                      product.originalPrice ? "text-red-500" : "text-gray-900"
+                      product?.originalPrice ? "text-red-500" : "text-gray-900"
                     )}>
-                      ${product.price.toFixed(2)}
+                      ${product?.price.toFixed(2)}
                     </span>
                   </div>
                   
-                  {product.originalPrice && (
+                  {product?.originalPrice && (
                     <p className="text-sm text-green-600 mt-1">
                       Save ${(product.originalPrice - product.price).toFixed(2)} ({Math.round((1 - product.price / product.originalPrice) * 100)}% off)
                     </p>
                   )}
                 </div>
                 
-                <p className="text-gray-600 mb-8">{product.description}</p>
+                <p className="text-gray-600 mb-8">{product?.description}</p>
                 
                 {/* Size selection */}
                 <div className="mb-6">
@@ -224,7 +258,7 @@ const ProductDetail = () => {
                   </div>
                   
                   <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
+                    {product?.sizes.map((size) => (
                       <button
                         key={size}
                         className={cn(
@@ -245,7 +279,7 @@ const ProductDetail = () => {
                 <div className="mb-8">
                   <h3 className="font-medium mb-2">Color</h3>
                   <div className="flex flex-wrap gap-3">
-                    {product.colors.map((color) => (
+                    {product?.colors.map((color) => (
                       <button
                         key={color}
                         className={cn(
@@ -302,8 +336,15 @@ const ProductDetail = () => {
                   </Button>
                   
                   {/* Wishlist button */}
-                  <Button variant="outline" size="icon" className="h-12 w-12">
-                    <Heart className="h-5 w-5" />
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-12 w-12"
+                    onClick={toggleWishlist}
+                  >
+                    <Heart 
+                      className={cn("h-5 w-5", isInWishlist ? "fill-red-500 text-red-500" : "")} 
+                    />
                   </Button>
                 </div>
                 
