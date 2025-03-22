@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '@/components/ui/container';
@@ -106,7 +107,7 @@ const Footer = () => {
         {/* Bottom Section - Copyright */}
         <div className="mt-12 text-center">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} E-Commerce Store. All rights reserved.
+            &copy; {new Date().getFullYear()} SoleSynergy. All rights reserved.
           </p>
         </div>
       </Container>
