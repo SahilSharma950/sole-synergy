@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '@/components/ui/container';
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const Footer = () => {
   return (
@@ -90,7 +91,7 @@ const Footer = () => {
               Subscribe to our newsletter for the latest updates and exclusive offers.
             </p>
             <div className="mt-4">
-              <input
+              <Input
                 type="email"
                 placeholder="Enter your email"
                 className="w-full px-4 py-2 rounded-md text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
