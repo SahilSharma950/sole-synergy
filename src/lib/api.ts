@@ -1,3 +1,4 @@
+
 import { Product, Category, User, CartItem, WishlistItem } from './types';
 import { toast } from '@/components/ui/sonner';
 
@@ -7,7 +8,7 @@ const products: Product[] = [
     id: '1',
     name: 'Air Max Pulse',
     price: 149.99,
-    description: 'Inspired by the energy of London's music scene, the Air Max Pulse brings a new beat to the iconic Air Max line. Its textile-wrapped midsole and vacuum-sealed accents add a cutting-edge aesthetic to its technical construction, while the Air unit in the heel delivers responsive cushioning for all-day comfort.',
+    description: "Inspired by the energy of London's music scene, the Air Max Pulse brings a new beat to the iconic Air Max line. Its textile-wrapped midsole and vacuum-sealed accents add a cutting-edge aesthetic to its technical construction, while the Air unit in the heel delivers responsive cushioning for all-day comfort.",
     images: [
       'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/1d8e1a76-7f43-4b7e-a811-44c249e2a604/air-max-pulse-shoes-QShhG8.png',
       'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/b329e6f6-be5d-478b-8604-09d709bd2c2e/air-max-pulse-shoes-QShhG8.png',
